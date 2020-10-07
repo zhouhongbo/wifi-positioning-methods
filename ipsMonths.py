@@ -12,6 +12,7 @@ monthAmount = 2
 metricRand = [0] * monthAmount
 metricKnn = [0] * monthAmount
 metricNn = [0] * monthAmount
+metricStg = [0] * monthAmount
 
 month = 1
 while month <= monthAmount:
@@ -40,6 +41,13 @@ while month <= monthAmount:
     errorKnn = customError(predictionKnn, dataTest.coords)
     metricKnn[month-1] = np.percentile(errorKnn, 75)  # 计算75%误差
 
+    # Stg method estimation
+    stgValue = 3 # AP filtering value
+    kValue = 5 # Number of neighbors
+    predictionStg = stgKNNEstimation(dataTrain.rss, dataTest.rss, dataTrain.coords, stgValue, kValue)
+    errorStg = customError(predictionStg, dataTest.coords)
+    metricStg[month-1] = np.percentile(errorStg, 75)  # 计算75%误差
+
     print(month)
     month += 1
 
@@ -48,6 +56,7 @@ x = [i+1 for i in range(monthAmount)]
 plt.plot(x, metricRand, label="Rand")
 plt.plot(x, metricNn, label="NN")
 plt.plot(x, metricKnn, label="KNN")
+plt.plot(x, metricStg, label="Stg")
 
 plt.xlabel("month number", {"size": 15})
 plt.ylabel("75 percentile error (m)", {"size": 15})

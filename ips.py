@@ -32,3 +32,29 @@ def randomEstimation(samples, query, positions):
     prediction = pos[neighbors, :]
 
     return prediction
+
+def stgKNNEstimation(samples, query, positions, stgValue, k):
+    def stgSmplsPerAP(rss,stgValue):
+        result = [[] for _ in range(rss.shape[1])] # 二维数组，行数与AP数相同
+        stgIdx = np.argsort(rss)[:, -stgValue:] # 最强AP的下标
+        for i in range(stgIdx.shape[0]):
+            for j in range(stgIdx.shape[1]):
+                result[stgIdx[i][j]].append(i)
+        return result
+
+    samplesList = stgSmplsPerAP(samples, stgValue) # 与MATLAB代码有一点不同是因为最强的K个AP不是固定的
+    prediction = np.empty([query.shape[0], 3])
+
+    for i in range(query.shape[0]):  # For each query sample
+        fingerprint = query[i, :]
+        # Find the strongest AP in the query sample
+        stgIdx = np.argsort(fingerprint)[-stgValue:]
+        # Get training samples whose strongest APs match those of the query
+        allFPIdx = []
+        for idx in stgIdx:
+            allFPIdx.extend(samplesList[idx])
+        # Apply kNN over the training selection 
+        fingerprint = fingerprint.reshape(1, 20)
+        kNNPrediction = kNNEstimation(samples[allFPIdx,:], fingerprint, positions[allFPIdx,:], k)
+        prediction[i] = kNNPrediction
+    return prediction
