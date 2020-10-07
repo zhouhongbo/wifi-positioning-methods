@@ -9,6 +9,7 @@ from funcs import *
 monthAmount = 2
 
 # Storage for error
+metricRand = [0] * monthAmount
 metricKnn = [0] * monthAmount
 metricNn = [0] * monthAmount
 
@@ -21,6 +22,11 @@ while month <= monthAmount:
     # deal with not seen AP
     dataTrain.rss[dataTrain.rss == 100] = -105
     dataTest.rss[dataTest.rss == 100] = -105
+
+    # random location estimation
+    predictionRandom = randomEstimation(dataTrain.rss, dataTest.rss, dataTrain.coords)
+    errorRandom = customError(predictionRandom, dataTest.coords)
+    metricRand[month-1] = np.percentile(errorRandom, 75)  # 计算75%误差
 
     # NN method estimation
     knnValue = 1
@@ -39,6 +45,7 @@ while month <= monthAmount:
 
 # Display figure "ipsError"
 x = [i+1 for i in range(monthAmount)]
+plt.plot(x, metricRand, label="Rand")
 plt.plot(x, metricNn, label="NN")
 plt.plot(x, metricKnn, label="KNN")
 

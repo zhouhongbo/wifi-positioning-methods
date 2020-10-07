@@ -23,3 +23,12 @@ def kNNEstimation(samples, query, positions, k):
             prediction[i, :] = np.mean(pos, axis=0)
     
     return prediction
+
+def randomEstimation(samples, query, positions):
+    pos = np.unique(positions, axis=0)
+    nPoints = pos.shape[0]
+    nQuery = query.shape[0]
+    neighbors = np.random.randint(0, nPoints, size=nQuery)
+    prediction = pos[neighbors, :]
+
+    return prediction
