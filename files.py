@@ -46,12 +46,12 @@ def getDirContent(dirPath, dirOrFile):
     Test1:
         dirPath: "db"
         dirOrFile: 1
-        list: ['01', '02']
+        arr: ['01', '02']
     
     Test2:
         dirPath: "db/01"
         dirOrFile: 0
-        list: ['trn01crd.csv','trn01ids.csv','trn01rss.csv','trn01tms.csv','trn02crd.csv','trn02ids.csv','trn02rss.csv','trn02tms.csv',\
+        arr: ['trn01crd.csv','trn01ids.csv','trn01rss.csv','trn01tms.csv','trn02crd.csv','trn02ids.csv','trn02rss.csv','trn02tms.csv',\
                 'trn03crd.csv','trn03ids.csv','trn03rss.csv','trn03tms.csv','trn04crd.csv','trn04ids.csv','trn04rss.csv','trn04tms.csv',\
                 'tst01crd.csv','tst01ids.csv','tst01rss.csv','tst01tms.csv','tst02crd.csv','tst02ids.csv','tst02rss.csv','tst02tms.csv',\
                 'tst03crd.csv','tst03ids.csv','tst03rss.csv','tst03tms.csv','tst04crd.csv','tst04ids.csv','tst04rss.csv','tst04tms.csv',\
@@ -59,11 +59,11 @@ def getDirContent(dirPath, dirOrFile):
                 'tst07crd.csv','tst07ids.csv','tst07rss.csv','tst07tms.csv','tst08crd.csv','tst08ids.csv','tst08rss.csv','tst08tms.csv']
     """
     if dirOrFile == 1:
-        list = os.listdir(dirPath)
-        list.remove("Readme.txt")
+        arr = os.listdir(dirPath)
+        arr.remove("Readme.txt")
     else:
-        list = os.listdir(dirPath)
-    return list
+        arr = os.listdir(dirPath)
+    return arr
 
 def rmPartsAndExt(fileNames, defs):
     """获得训练集和测试集名称
@@ -371,6 +371,38 @@ def loadContentSpecific(dataFolder, trainOrTest, campaingNumbers, monthNumbers):
     data = loadContent(dataFolder, fileNames, result, defs)
     return data
 
+def loadAllContent(dataFolder):
+    """加载所有数据
+
+    Args:
+        dataFolder (String): 目录
+
+    Returns:
+        data (Data): [description]
+    """
+    defs = getFileNameDefs()
+    fileNames = getAllFileNames(dataFolder, defs)
+    result = [True] * len(fileNames)
+    data = loadContent(dataFolder, fileNames, result, defs)
+    return data
+
+def getMonthAmount(dirPath):
+    """计算总月数
+
+    Args:
+        dirPath (String): 目录
+
+    Returns:
+        monthAmount (Number): 月数
+    
+    Test1:
+        dirPath: "db"
+        monthAmount: 2
+    """
+    arr = getDirContent(dirPath, 1)
+    monthAmount = len(arr)
+    return monthAmount
+
 if __name__ == "__main__":
     # 测试用的数据
     dataFolder = "db"
@@ -396,3 +428,5 @@ if __name__ == "__main__":
     # print(composeFileContent("trn02", "db/01", defs))
     # print(loadContent(dataFolder, dirAndFileNames, filterFileNames(dirAndFileNames, 1, [2, 4], 1, defs), defs))
     # print(loadContentSpecific(dataFolder, 2, [2, 4, 6, 8], 1))
+    # print(getMonthAmount("db"))
+    print(loadAllContent("db"))
