@@ -13,6 +13,7 @@ metricRand = [0] * monthAmount
 metricKnn = [0] * monthAmount
 metricNn = [0] * monthAmount
 metricStg = [0] * monthAmount
+metricProb = [0] * monthAmount
 
 month = 1
 while month <= monthAmount:
@@ -48,6 +49,12 @@ while month <= monthAmount:
     errorStg = customError(predictionStg, dataTest.coords)
     metricStg[month-1] = np.percentile(errorStg, 75)  # 计算75%误差
 
+    # Probabilistic method estimation
+    kValue = 1;    # Single Point
+    predictionProb = probEstimation(dataTrain.rss, dataTest.rss, dataTrain.coords, kValue, dataTrain.ids // 100)
+    errorProb = customError(predictionProb, dataTest.coords)
+    metricProb[month-1] = np.percentile(errorProb, 75)  # 计算75%误差
+
     print(month)
     month += 1
 
@@ -57,6 +64,7 @@ plt.plot(x, metricRand, label="Rand")
 plt.plot(x, metricNn, label="NN")
 plt.plot(x, metricKnn, label="KNN")
 plt.plot(x, metricStg, label="Stg")
+plt.plot(x, metricProb, label="Prob")
 
 plt.xlabel("month number", {"size": 15})
 plt.ylabel("75 percentile error (m)", {"size": 15})

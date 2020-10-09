@@ -1,5 +1,7 @@
 """ 定位算法 """
 import numpy as np
+from scipy.stats import norm
+from funcs import *
 
 def kNNEstimation(samples, query, positions, k):
     samplRows = samples.shape[0]
@@ -57,4 +59,60 @@ def stgKNNEstimation(samples, query, positions, stgValue, k):
         fingerprint = fingerprint.reshape(1, 20)
         kNNPrediction = kNNEstimation(samples[allFPIdx,:], fingerprint, positions[allFPIdx,:], k)
         prediction[i] = kNNPrediction
+    return prediction
+
+def probEstimation(samples, query, positions, k, ids):
+    def probs(M, S, query):
+        nRowT = M.shape[0]
+        nRowV = query.shape[0]
+        PROBS = np.zeros([nRowT, nRowV])
+
+        for i in range(nRowV):
+            fp = query[i, :]
+            estP = probsFP(M, S, fp)
+            PROBS[:, i] = estP
+        
+        return PROBS
+    
+    def probsFP(M, S, fp):
+        e = 0.5
+        nRowT = M.shape[0]
+        FP1 = np.tile(fp - e, (nRowT, 1))
+        FP2 = np.tile(fp + e, (nRowT, 1))
+        D1 = norm.cdf(FP1, M, S) # 当标准差为0时，结果为nan，而MATLAB的结果为1或0，当val < mean时为0， 大于等于mean时为1
+        D2 = norm.cdf(FP2, M, S)
+
+        # 处理值为nan的情况
+        D1[np.isnan(D1) & (FP1 < M)] = 0
+        D1[np.isnan(D1) & (FP1 >= M)] = 1
+        D2[np.isnan(D2) & (FP2 < M)] = 0
+        D2[np.isnan(D2) & (FP2 >= M)] = 1
+
+
+        PROBS = D2 - D1
+        PROBS[PROBS == 0] = 10 ** (-24)
+
+        P = np.prod(PROBS, axis=1)
+        return P
+    
+    def estimatesKNN(PROBS, positions, k):
+        nRow = PROBS.shape[1]
+        estimates = np.zeros([nRow, 3])
+        I = np.argsort(-PROBS, axis=0) # 降序排序
+
+        for i in range(nRow):
+            # xs = positions[:, 0]
+            # ys = positions[:, 1]
+            # floor = positions[:, 2]
+            # estimates[i, 0] = np.mean(xs[I[0:k, i]])
+            # estimates[i, 1] = np.mean(ys[I[0:k, i]])
+            # estimates[i, 2] = np.mean(floor[I[0:k, i]])
+            estimates[i, :] = np.mean(positions[I[0:k, i], :], axis=0)
+
+        return estimates
+
+    M, S, pos = getMeanAndStd(samples, positions, ids)
+    PROBS = probs(M, S, query)
+    prediction = estimatesKNN(PROBS, pos, k)
+
     return prediction
