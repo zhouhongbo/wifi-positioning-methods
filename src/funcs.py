@@ -45,3 +45,39 @@ def getMeanAndStd(samples, locations, ids):
         pos[i, :] = np.mean(locations[index, :], axis=0)
 
     return M, S, pos
+
+def convertToTimeVectors(timeNumber):
+    """将时间戳转换为年月日时分秒的形式
+
+    Args:
+        timeNumber (Number): 时间戳
+
+    Returns:
+        year: 年
+        month: 月
+        day: 日
+        hour: 时
+        minute: 分
+        second: 秒
+    
+    Test1：
+        timeNumber: 20200926142506
+        year: 2020
+        month: 9
+        day: 26
+        hour: 14
+        minute: 25
+        second: 6
+    """
+    second = timeNumber % 100
+    minute = (timeNumber // (10 ** 2)) % 100
+    hour = (timeNumber // (10 ** 4)) % 100
+    day = (timeNumber // (10 ** 6)) % 100
+    month = (timeNumber // (10 ** 8)) % 100
+    year = timeNumber // (10 ** 10)
+    return year, month, day, hour, minute, second
+
+if __name__ == "__main__":
+    # 测试
+    timeNumber = 20200926142506
+    print(convertToTimeVectors(timeNumber))
