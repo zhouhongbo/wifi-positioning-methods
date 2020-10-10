@@ -1,3 +1,6 @@
+"""
+对每周的数据分别使用所有的定位算法，计算75%定位误差并生成定位误差对比图
+"""
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -5,74 +8,74 @@ from files import *
 from ips import *
 from funcs import *
 
-# Common to all methods
-monthAmount = 2
+# 所有定位算法通用的变量
+weekAmount = 2
 
-# Storage for error
-metricRand = [0] * monthAmount
-metricKnn = [0] * monthAmount
-metricNn = [0] * monthAmount
-metricStg = [0] * monthAmount
-metricProb = [0] * monthAmount
+# 保存75%定位误差的变量
+metricRand = [0] * weekAmount
+metricKnn = [0] * weekAmount
+metricNn = [0] * weekAmount
+metricStg = [0] * weekAmount
+metricProb = [0] * weekAmount
 
-month = 1
-while month <= monthAmount:
-    # load current month data
-    dataTrain = loadContentSpecific("db", 1, [2, 4], month)
-    dataTest = loadContentSpecific("db", 2, [2, 4, 6, 8], month)
+week = 1
+while week <= weekAmount:
+    # 加载本周数据
+    dataTrain = loadContentSpecific("db", 1, [2, 4], week)
+    dataTest = loadContentSpecific("db", 2, [2, 4, 6, 8], week)
 
-    # deal with not seen AP
+    # 处理无信号AP的数据
     dataTrain.rss[dataTrain.rss == 100] = -105
     dataTest.rss[dataTest.rss == 100] = -105
 
-    # random location estimation
+    # 随机方法
     predictionRandom = randomEstimation(dataTrain.rss, dataTest.rss, dataTrain.coords)
     errorRandom = customError(predictionRandom, dataTest.coords)
-    metricRand[month-1] = np.percentile(errorRandom, 75)  # 计算75%误差
+    metricRand[week-1] = np.percentile(errorRandom, 75)  # 计算75%误差
 
-    # NN method estimation
+    # NN方法
     knnValue = 1
     predictionNn = kNNEstimation(dataTrain.rss, dataTest.rss, dataTrain.coords, knnValue)
     errorNn = customError(predictionNn, dataTest.coords)
-    metricNn[month-1] = np.percentile(errorNn, 75)  # 计算75%误差
+    metricNn[week-1] = np.percentile(errorNn, 75)
 
-    # KNN method estimation
+    # KNN方法
     knnValue = 9
     predictionKnn = kNNEstimation(dataTrain.rss, dataTest.rss, dataTrain.coords, knnValue)
     errorKnn = customError(predictionKnn, dataTest.coords)
-    metricKnn[month-1] = np.percentile(errorKnn, 75)  # 计算75%误差
+    metricKnn[week-1] = np.percentile(errorKnn, 75)
 
-    # Stg method estimation
-    stgValue = 3 # AP filtering value
-    kValue = 5 # Number of neighbors
+    # Stg方法
+    stgValue = 3 # 信号最强AP的个数
+    kValue = 5 # 选取的邻居节点个数
     predictionStg = stgKNNEstimation(dataTrain.rss, dataTest.rss, dataTrain.coords, stgValue, kValue)
     errorStg = customError(predictionStg, dataTest.coords)
-    metricStg[month-1] = np.percentile(errorStg, 75)  # 计算75%误差
+    metricStg[week-1] = np.percentile(errorStg, 75)
 
-    # Probabilistic method estimation
-    kValue = 1;    # Single Point
+    # 基于概率的方法
+    kValue = 1;    # 选取概率最大节点的个数
     predictionProb = probEstimation(dataTrain.rss, dataTest.rss, dataTrain.coords, kValue, dataTrain.ids // 100)
     errorProb = customError(predictionProb, dataTest.coords)
-    metricProb[month-1] = np.percentile(errorProb, 75)  # 计算75%误差
+    metricProb[week-1] = np.percentile(errorProb, 75)
 
-    print(month)
-    month += 1
+    print(week)
+    week += 1
 
-# Display figure "ipsError"
-x = [i+1 for i in range(monthAmount)]
+# 绘制定位误差对比图
+x = [i+1 for i in range(weekAmount)]
 plt.plot(x, metricRand, label="Rand")
 plt.plot(x, metricNn, label="NN")
 plt.plot(x, metricKnn, label="KNN")
 plt.plot(x, metricStg, label="Stg")
 plt.plot(x, metricProb, label="Prob")
 
-plt.xlabel("month number", {"size": 15})
+plt.xlabel("week number", {"size": 15})
 plt.ylabel("75 percentile error (m)", {"size": 15})
 
-plt.xlim((1, monthAmount))
+plt.xlim((1, weekAmount))
 plt.ylim((0, 6))
 
-plt.xticks(np.arange(1, monthAmount+1, 1))
+plt.xticks(np.arange(1, weekAmount+1, 1))
 plt.yticks(np.arange(0, 7, 1))
 
 plt.legend(loc="upper right")

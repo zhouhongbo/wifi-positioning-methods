@@ -1,4 +1,6 @@
-""" 处理文件的函数 """
+""" 
+处理文件的函数，其中最重要的是 loadContentSpecific()
+"""
 import os
 import numpy as np
 
@@ -16,7 +18,7 @@ class Defs:
 
 class Data:
     """
-    保存数据
+    模仿结构体，保存数据
     """
     def __init__(self, rss, coords, time, ids):
         self.rss = rss
@@ -41,7 +43,7 @@ def getDirContent(dirPath, dirOrFile):
         dirOrFile (Number): 为 1 时返回目录名，否则返回文件名
 
     Returns:
-        (List): 目录或者文件名列表
+        arr (List): 目录或者文件名列表
 
     Test1:
         dirPath: "db"
@@ -51,11 +53,11 @@ def getDirContent(dirPath, dirOrFile):
     Test2:
         dirPath: "db/01"
         dirOrFile: 0
-        arr: ['trn01crd.csv','trn01ids.csv','trn01rss.csv','trn01tms.csv','trn02crd.csv','trn02ids.csv','trn02rss.csv','trn02tms.csv',\
-                'trn03crd.csv','trn03ids.csv','trn03rss.csv','trn03tms.csv','trn04crd.csv','trn04ids.csv','trn04rss.csv','trn04tms.csv',\
-                'tst01crd.csv','tst01ids.csv','tst01rss.csv','tst01tms.csv','tst02crd.csv','tst02ids.csv','tst02rss.csv','tst02tms.csv',\
-                'tst03crd.csv','tst03ids.csv','tst03rss.csv','tst03tms.csv','tst04crd.csv','tst04ids.csv','tst04rss.csv','tst04tms.csv',\
-                'tst05crd.csv','tst05ids.csv','tst05rss.csv','tst05tms.csv','tst06crd.csv','tst06ids.csv','tst06rss.csv','tst06tms.csv',\
+        arr: ['trn01crd.csv','trn01ids.csv','trn01rss.csv','trn01tms.csv','trn02crd.csv','trn02ids.csv','trn02rss.csv','trn02tms.csv',
+                'trn03crd.csv','trn03ids.csv','trn03rss.csv','trn03tms.csv','trn04crd.csv','trn04ids.csv','trn04rss.csv','trn04tms.csv',
+                'tst01crd.csv','tst01ids.csv','tst01rss.csv','tst01tms.csv','tst02crd.csv','tst02ids.csv','tst02rss.csv','tst02tms.csv',
+                'tst03crd.csv','tst03ids.csv','tst03rss.csv','tst03tms.csv','tst04crd.csv','tst04ids.csv','tst04rss.csv','tst04tms.csv',
+                'tst05crd.csv','tst05ids.csv','tst05rss.csv','tst05tms.csv','tst06crd.csv','tst06ids.csv','tst06rss.csv','tst06tms.csv',
                 'tst07crd.csv','tst07ids.csv','tst07rss.csv','tst07tms.csv','tst08crd.csv','tst08ids.csv','tst08rss.csv','tst08tms.csv']
     """
     if dirOrFile == 1:
@@ -70,19 +72,19 @@ def rmPartsAndExt(fileNames, defs):
 
     Args:
         fileNames (List): 月份目录下的所有文件名
-        defs (Defs): 参见 getFileNameDefs(); 这里没用上
+        defs (Defs)
 
     Returns:
         result (List): 训练集和测试集名称
 
     Test1:
-        fileNames: ['trn01crd.csv','trn01ids.csv','trn01rss.csv','trn01tms.csv','trn02crd.csv','trn02ids.csv','trn02rss.csv','trn02tms.csv',\
-                'trn03crd.csv','trn03ids.csv','trn03rss.csv','trn03tms.csv','trn04crd.csv','trn04ids.csv','trn04rss.csv','trn04tms.csv',\
-                'tst01crd.csv','tst01ids.csv','tst01rss.csv','tst01tms.csv','tst02crd.csv','tst02ids.csv','tst02rss.csv','tst02tms.csv',\
-                'tst03crd.csv','tst03ids.csv','tst03rss.csv','tst03tms.csv','tst04crd.csv','tst04ids.csv','tst04rss.csv','tst04tms.csv',\
-                'tst05crd.csv','tst05ids.csv','tst05rss.csv','tst05tms.csv','tst06crd.csv','tst06ids.csv','tst06rss.csv','tst06tms.csv',\
+        fileNames: ['trn01crd.csv','trn01ids.csv','trn01rss.csv','trn01tms.csv','trn02crd.csv','trn02ids.csv','trn02rss.csv','trn02tms.csv',
+                'trn03crd.csv','trn03ids.csv','trn03rss.csv','trn03tms.csv','trn04crd.csv','trn04ids.csv','trn04rss.csv','trn04tms.csv',
+                'tst01crd.csv','tst01ids.csv','tst01rss.csv','tst01tms.csv','tst02crd.csv','tst02ids.csv','tst02rss.csv','tst02tms.csv',
+                'tst03crd.csv','tst03ids.csv','tst03rss.csv','tst03tms.csv','tst04crd.csv','tst04ids.csv','tst04rss.csv','tst04tms.csv',
+                'tst05crd.csv','tst05ids.csv','tst05rss.csv','tst05tms.csv','tst06crd.csv','tst06ids.csv','tst06rss.csv','tst06tms.csv',
                 'tst07crd.csv','tst07ids.csv','tst07rss.csv','tst07tms.csv','tst08crd.csv','tst08ids.csv','tst08rss.csv','tst08tms.csv']
-        defs: 
+        defs
         result: ['trn01','trn02','trn03','trn04','tst01','tst02','tst03','tst04','tst05','tst06','tst07','tst08']
     """
     fileNames = [item[0:5] for item in fileNames]
@@ -102,38 +104,19 @@ def getAllFileNames(dataFolder, defs):
 
     Args:
         dataFolder (String): 数据集目录
-        defs (Defs): 参见 getFileNameDefs()
+        defs (Defs)
 
     Returns:
         dirAndFileNames (List): 二维数组，第一列为目录名，第二列为文件名
     
     Test1:
         dataFolder: "db"
-        defs:
-        dirAndFileNames:[['01', 'trn01']
-                         ['01', 'trn02']
-                         ['01', 'trn03']
-                         ['01', 'trn04']
-                         ['01', 'tst01']
-                         ['01', 'tst02']
-                         ['01', 'tst03']
-                         ['01', 'tst04']
-                         ['01', 'tst05']
-                         ['01', 'tst06']
-                         ['01', 'tst07']
-                         ['01', 'tst08']
-                         ['02', 'trn01']
-                         ['02', 'trn02']
-                         ['02', 'trn03']
-                         ['02', 'trn04']
-                         ['02', 'tst01']
-                         ['02', 'tst02']
-                         ['02', 'tst03']
-                         ['02', 'tst04']
-                         ['02', 'tst05']
-                         ['02', 'tst06']
-                         ['02', 'tst07']
-                         ['02', 'tst08']]
+        defs
+        dirAndFileNames:[['01', 'trn01']，['01', 'trn02']，['01', 'trn03']，['01', 'trn04']，
+            ['01', 'tst01']，['01', 'tst02']，['01', 'tst03']，['01', 'tst04']，['01', 'tst05']，
+            ['01', 'tst06']，['01', 'tst07']，['01', 'tst08']，['02', 'trn01']，['02', 'trn02']，
+            ['02', 'trn03']，['02', 'trn04']，['02', 'tst01']，['02', 'tst02']，['02', 'tst03']，
+            ['02', 'tst04']，['02', 'tst05']，['02', 'tst06']，['02', 'tst07']，['02', 'tst08']]
     """
     dirAndFileNames = []
     dirs = getDirContent(dataFolder, 1)
@@ -152,7 +135,7 @@ def filterForTrainOrTest(dirAndFileNames, trainOrTest, defs):
     Args:
         dirAndFileNames (List): 二维数组，第一列为目录名，第二列为文件名
         trainOrTest (Number): 1 for train， 2 for test, 0 for both
-        defs (Defs): 参见 getFileNameDefs()
+        defs (Defs)
 
     Returns:
         result (List): 一维数组，长度与 dirAndFileNames 的行数相同，result[i] = True 表示需要 dirAndFileNames[i] 的数据
@@ -160,22 +143,22 @@ def filterForTrainOrTest(dirAndFileNames, trainOrTest, defs):
     Test1:
         dirAndFileNames: 参见 getAllFileNames()
         trainOrTest: 1
-        defs:
-        result: [True, True, True, True, False, False, False, False, False, False, False, False,\
+        defs
+        result: [True, True, True, True, False, False, False, False, False, False, False, False,
                  True, True, True, True, False, False, False, False, False, False, False, False]
 
     Test2:
         dirAndFileNames: 参见 getAllFileNames()
         trainOrTest: 2
-        defs:
-        result: [False, False, False, False, True, True, True, True, True, True, True, True,\
+        defs
+        result: [False, False, False, False, True, True, True, True, True, True, True, True,
                  False, False, False, False, True, True, True, True, True, True, True, True]
     
     Test3:
         dirAndFileNames: 参见 getAllFileNames()
         trainOrTest: 0
-        defs:
-        result: [True, True, True, True, True, True, True, True, True, True, True, True,\
+        defs
+        result: [True, True, True, True, True, True, True, True, True, True, True, True,
                  True, True, True, True, True, True, True, True, True, True, True, True]
     """
     result = [False] * len(dirAndFileNames)
@@ -206,7 +189,7 @@ def filterForCampaingNumbers(dirAndFileNames, campaingNumbers):
     Test1:
         dirAndFileNames: 参见 getAllFileNames()
         campaingNumbers: [2, 4]
-        result: [False, True, False, True, False, True, False, True, False, False, False, False,\
+        result: [False, True, False, True, False, True, False, True, False, False, False, False,
                  False, True, False, True, False, True, False, True, False, False, False, False]
     """
     result = [False] * len(dirAndFileNames)
@@ -231,7 +214,7 @@ def filterForMonthNumbers(dirAndFileNames, monthNumbers):
     Test1:
         dirAndFileNames: 参见 getAllFileNames()
         monthNumbers: 1
-        result: [True, True, True, True, True, True, True, True, True, True, True, True,\
+        result: [True, True, True, True, True, True, True, True, True, True, True, True,
                  False, False, False, False, False, False, False, False, False, False, False, False]
     """
     result = [False] * len(dirAndFileNames)
@@ -251,7 +234,7 @@ def filterFileNames(dirAndFileNames, trainOrTest, campaingNumbers, monthNumbers,
         trainOrTest (Number): 1 for train， 2 for test, 0 for both
         campaingNumbers (List): 数据集的编号
         monthNumbers (Number): 月份
-        defs (Defs): 参见 getFileNameDefs()
+        defs (Defs)
 
     Returns:
         result (List): 一维数组，长度与 dirAndFileNames 的行数相同，result[i] = True 表示需要 dirAndFileNames[i] 的数据
@@ -261,8 +244,8 @@ def filterFileNames(dirAndFileNames, trainOrTest, campaingNumbers, monthNumbers,
         trainOrTest: 1
         campaingNumbers: [2, 4]
         monthNumbers: 1
-        defs:
-        result: [False, True, False, True, False, False, False, False, False, False, False, False,\
+        defs
+        result: [False, True, False, True, False, False, False, False, False, False, False, False,
                  False, False, False, False, False, False, False, False, False, False, False, False]
     """
     result = [True] * len(dirAndFileNames)
@@ -282,7 +265,7 @@ def composeFileContent(fileName, dataFolder, defs):
     Args:
         fileName (String): 数据集和编号
         dataFolder (String): 目录
-        defs (Defs): 
+        defs (Defs)
 
     Returns:
         fileContent (Data): dataFolder目录下的数据
@@ -314,10 +297,10 @@ def loadContent(dataFolder, fileNames, result, defs):
         dataFolder (String): 目录
         fileNames (List): getAllFileNames() 的返回值
         result (List): filterFileNames() 的返回值
-        defs (Defs): 
+        defs (Defs)
 
     Returns:
-        data (Data): 
+        data (Data)
 
     Test1:
         dataFolder: "db"
@@ -357,7 +340,7 @@ def loadContentSpecific(dataFolder, trainOrTest, campaingNumbers, monthNumbers):
         monthNumbers (Number): 月份
 
     Returns:
-        data (Data): [description]
+        data (Data)
     
     Test1:
         dataFolder: "db"
@@ -378,7 +361,7 @@ def loadAllContent(dataFolder):
         dataFolder (String): 目录
 
     Returns:
-        data (Data): [description]
+        data (Data)
     """
     defs = getFileNameDefs()
     fileNames = getAllFileNames(dataFolder, defs)
@@ -404,7 +387,7 @@ def getMonthAmount(dirPath):
     return monthAmount
 
 if __name__ == "__main__":
-    # 测试用的数据
+    # 测试
     dataFolder = "db"
     defs = getFileNameDefs()
     fileNames = ['trn01crd.csv','trn01ids.csv','trn01rss.csv','trn01tms.csv','trn02crd.csv','trn02ids.csv','trn02rss.csv','trn02tms.csv',\
@@ -429,4 +412,4 @@ if __name__ == "__main__":
     # print(loadContent(dataFolder, dirAndFileNames, filterFileNames(dirAndFileNames, 1, [2, 4], 1, defs), defs))
     # print(loadContentSpecific(dataFolder, 2, [2, 4, 6, 8], 1))
     # print(getMonthAmount("db"))
-    print(loadAllContent("db"))
+    # print(loadAllContent("db"))
