@@ -9,7 +9,7 @@ from ips import *
 from funcs import *
 
 # 所有定位算法通用的变量
-weekAmount = 2
+weekAmount = 3
 
 # 保存75%定位误差的变量
 metricRand = [0] * weekAmount
