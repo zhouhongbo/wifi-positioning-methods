@@ -62,7 +62,7 @@ def getDirContent(dirPath, dirOrFile):
     """
     if dirOrFile == 1:
         arr = os.listdir(dirPath)
-        arr.remove("Readme.txt")
+        arr.remove("Readme.md")
     else:
         arr = os.listdir(dirPath)
     return arr
