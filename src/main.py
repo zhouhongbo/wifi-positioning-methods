@@ -4,9 +4,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from files import *
-from ips import *
-from funcs import *
+from file import *
+from estimate import *
+from func import *
 
 # 所有定位算法通用的变量
 weekAmount = 3

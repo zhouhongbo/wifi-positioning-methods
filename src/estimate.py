@@ -4,7 +4,7 @@
 import numpy as np
 from scipy.stats import norm
 
-from funcs import *
+from func import *
 
 def kNNEstimation(samples, query, positions, k):
     """实现KNN方法

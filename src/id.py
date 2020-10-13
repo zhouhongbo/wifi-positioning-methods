@@ -3,7 +3,7 @@
 """
 import numpy as np
 
-from files import *
+from file import *
 
 def findWeek(pointIds, week):
     """根据week参数处理ID
