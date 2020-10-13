@@ -1,10 +1,17 @@
 """ 
 功能：生成rss.csv、tms.csv和ids.csv文件
 """
-# filename: 例 "AP1-2.4G (54_75_95_F4_E2_ED).csv"; 
-# return rss: 一维数组，所有有效点的后10个数据
-# return tms: 一维数组，有效点对应的采集时间
+
 def loadData(filename): 
+    """加载数据
+
+    Args:
+        filename (String): 文件名，例 "AP1-2.4G (54_75_95_F4_E2_ED).csv"
+
+    Returns:
+        rss (List): 一维数组，所有有效点的后10个数据
+        tms (List): 一维数组，有效点对应的采集时间
+    """
     import csv
     # 读取信号数据、时间数据到一维数组tmpRss、tmpTms中
     with open(filename, "r") as csvfile:
@@ -42,6 +49,12 @@ def loadData(filename):
 # return rss: 二维数组，行是AP的名称，列是信号值(还需要行列翻转)
 # return tms: 一维数组，有效点对应的采集时间（时间格式还需要转换）
 def loadAllData():
+    """加载文件夹内的所有数据
+
+    Returns:
+        rss (List): 二维数组，行是AP的名称，列是信号值
+        tms (List): 一维数组，有效点对应的采集时间
+    """
     import os
     # 获取所有csv文件的名称
     tmp = os.listdir(".")
@@ -60,6 +73,13 @@ def loadAllData():
 
 # 将rss和tms按照Long-Term数据集的格式保存
 def saveData(rss, tms, prefix):
+    """保存处理后的数据
+
+    Args:
+        rss (List): 二维数组，行是AP的名称，列是信号值
+        tms (List): 一维数组，有效点对应的采集时间
+        prefix (String): 文件名前缀
+    """
     import csv
     # 翻转二维数组
     tmp = [[0] * len(rss) for _ in range(len(rss[0]))]
@@ -70,12 +90,12 @@ def saveData(rss, tms, prefix):
     # 将时间格式转换为“年月日时分秒”
     for i in range(len(tms)):
         year = tms[i][0:4]
-        month = tms[i][5:7]
+        week = tms[i][5:7]
         day = tms[i][8:10]
         hour = tms[i][11:13]
         minute = tms[i][14:16]
         second = tms[i][17:19]
-        tms[i] = year + month + day + hour + minute + second
+        tms[i] = year + week + day + hour + minute + second
     
     # 写入文件
     with open(prefix + "rss.csv", "w", newline="") as csvfile:
@@ -89,7 +109,16 @@ def saveData(rss, tms, prefix):
 
     print("Success!")
 
-def generateIds(tms, month, datasetNum, datasetType, prefix):
+def generateIds(tms, week, datasetNum, datasetType, prefix):
+    """生成样本的ID
+
+    Args:
+        tms (String): 样本的时间戳
+        week (String): 样本所在的周次
+        datasetNum (String): 样本所在的数据集编号
+        datasetType (String): 样本的数据类型
+        prefix (String): 文件名前缀
+    """
     import csv
     ids = [""] * len(tms)
     pointId = 1
@@ -105,7 +134,7 @@ def generateIds(tms, month, datasetNum, datasetType, prefix):
         else:
             sampleIdStr = str(sampleId)
 
-        ids[i] = month + datasetNum + datasetType + pointIdStr + sampleIdStr
+        ids[i] = week + datasetNum + datasetType + pointIdStr + sampleIdStr
         
         if sampleId == 10:
             sampleId = 1
@@ -121,10 +150,11 @@ def generateIds(tms, month, datasetNum, datasetType, prefix):
 
 if __name__ == "__main__":
     # 参数
-    month = "02" # 两位数
-    datasetNum = "02" # 两位数
+    week = "01" # 两位数
+    datasetNum = "03" # 两位数
     datasetType = "1" # 1 for trainning, 2 for test
 
+    # 生成文件名前缀
     prefix = "trn" if datasetType == "1" else "tst" # 文件名前缀
     prefix += datasetNum
 
@@ -133,4 +163,4 @@ if __name__ == "__main__":
     saveData(rss, tms, prefix)
 
     # 生成ids.csv
-    generateIds(tms, month, datasetNum, datasetType, prefix)
+    generateIds(tms, week, datasetNum, datasetType, prefix)
