@@ -1,6 +1,7 @@
 """ 
 所有的定位算法
 """
+import math
 import numpy as np
 from scipy.stats import norm
 
@@ -105,7 +106,7 @@ def probEstimation(samples, query, positions, k, ids):
         samples (ndarray): 训练集样本
         query (ndarray): 测试集样本
         positions (ndarray): 训练集样本的位置
-        k (Number): [description]
+        k (Number): 最近邻个数
         ids (ndarray): 样本的ID（需要把特征值删除），根据这个参数把具有相同特征的训练集样本分组
 
     Returns:
@@ -158,4 +159,53 @@ def probEstimation(samples, query, positions, k, ids):
     PROBS = probs(M, S, query)
     prediction = estimatesKNN(PROBS, pos, k)
 
+    return prediction
+
+def gaussiankernelEstimation(samples, query, positions, sigma, k):
+    """gaussiankernelEstimation Estimate locations based on Gaussian assumption.
+
+    Args:
+        samples (ndarray): 训练集样本
+        query (ndarray): 测试集样本
+        positions (ndarray): 训练集样本的位置
+        sigma (Number): 核函数的宽度
+        k (Number): 最近邻个数
+
+    Returns:
+        prediction (ndarray): 预测位置
+    """
+    def estimateKNN(cf, positions, k):
+        # estimateKNN Estimate position being the average of k-likeliest positions
+        idx = np.argsort(-cf, axis=0) # 降序排序
+        ests = positions[idx[0:k], :]
+        
+        estPos = np.mean(ests, axis=0)
+        return estPos
+    
+    numFps = samples.shape[0]
+    numQ = query.shape[0]
+    prediction = np.zeros([numQ, 3])
+    # set optionally not detected APs to NaN, can provide robustness
+    samples[samples == -105] = np.nan
+    query[query == -105] = np.nan
+    # treat each RSS measurement as independent fingerprint and ignore the 6
+    # samples that are associated to the same fingerprint location
+    for i in range(numQ):
+        queryMat = np.tile(query[i, :], (numFps, 1))
+
+        # Associate each point a probability / cost corresponding to the
+        # likelihood that the current RSS vector corresponds to that position
+
+        # probability for each AP in each point using Gaussian similarity
+        likelihoodMatrix = (1 / math.sqrt(2 * math.pi * (sigma ** 2))) * np.exp(-(samples-queryMat) ** 2 / (2 * (sigma ** 2)))
+        # # replace zeros with a very small value
+        likelihoodMatrix[np.isnan(likelihoodMatrix)] = math.pow(10, -6)
+        # use logaritmic probabilities for incraesed efficiency and stability
+        likelihoodMatrix = np.log(likelihoodMatrix)
+        # combine individual likelihoods
+        costFunction = np.sum(likelihoodMatrix, axis = 1)
+
+        # compute position estimate as average of k most likely positions
+        k = min(k, numFps)
+        prediction[i, :] = estimateKNN(costFunction, positions, k)
     return prediction

@@ -17,6 +17,7 @@ metricKnn = [0] * weekAmount
 metricNn = [0] * weekAmount
 metricStg = [0] * weekAmount
 metricProb = [0] * weekAmount
+metricGk = [0] * weekAmount
 
 week = 1
 while week <= weekAmount:
@@ -28,10 +29,10 @@ while week <= weekAmount:
     dataTrain.rss[dataTrain.rss == 100] = -105
     dataTest.rss[dataTest.rss == 100] = -105
 
-    # 随机方法
+    # Rand方法
     predictionRandom = randomEstimation(dataTrain.rss, dataTest.rss, dataTrain.coords)
     errorRandom = customError(predictionRandom, dataTest.coords)
-    metricRand[week-1] = np.percentile(errorRandom, 75)  # 计算75%误差
+    metricRand[week-1] = np.percentile(errorRandom, 75)  # 计算75%误差, 与MATLAB中的prctile函数有细微差异
 
     # NN方法
     knnValue = 1
@@ -52,11 +53,18 @@ while week <= weekAmount:
     errorStg = customError(predictionStg, dataTest.coords)
     metricStg[week-1] = np.percentile(errorStg, 75)
 
-    # 基于概率的方法
-    kValue = 1;    # 选取概率最大节点的个数
+    # Prob方法
+    kValue = 1    # 选取概率最大节点的个数
     predictionProb = probEstimation(dataTrain.rss, dataTest.rss, dataTrain.coords, kValue, dataTrain.ids // 100)
     errorProb = customError(predictionProb, dataTest.coords)
     metricProb[week-1] = np.percentile(errorProb, 75)
+
+    # Gk方法
+    std_dB = 4 # 此参数影响不大
+    kValue = 12
+    predictionGk = gaussiankernelEstimation(dataTrain.rss, dataTest.rss, dataTrain.coords, std_dB, kValue)
+    errorGk = customError(predictionGk, dataTest.coords)
+    metricGk[week-1] = np.percentile(errorGk, 75)
 
     print(week)
     week += 1
@@ -68,6 +76,7 @@ plt.plot(x, metricNn, label="NN")
 plt.plot(x, metricKnn, label="KNN")
 plt.plot(x, metricStg, label="Stg")
 plt.plot(x, metricProb, label="Prob")
+plt.plot(x, metricGk, label="Gk")
 
 plt.xlabel("week number", {"size": 15})
 plt.ylabel("75 percentile error (m)", {"size": 15})
