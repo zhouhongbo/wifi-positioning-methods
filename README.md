@@ -29,7 +29,7 @@ Prob方法的主要思路是：通过贝叶斯公式，计算TP出现在每个RP
 #### Stg方法[4]
 Stg方法是KNN方法的一种改进方法，它通过TP的k个信号最强的信号接入点来筛选RP，然后再应用KNN方法。
 #### Gk方法[5]
-GK方法的主要思路是通过高斯核密度估计器（Gaussian Kernel Density Estimator，GKDE）计算每个指纹位置的相对过饱和度的可能性，并通过平均与最高似然值对应的位置来确定TP的位置。（尚未复现）
+GK方法的主要思路是通过高斯核密度估计器（Gaussian Kernel Density Estimator，GKDE）计算每个指纹位置的相对过饱和度的可能性，并通过平均与最高似然值对应的位置来确定TP的位置。
 ## 室内地图
 #### 数据采集点的位置
 ![图片](img/map.png)
