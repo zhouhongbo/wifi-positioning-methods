@@ -40,6 +40,44 @@ def kNNEstimation(samples, query, positions, k):
             prediction[i, :] = np.mean(pos, axis=0)
     
     return prediction
+    
+def wknnEstimation(samples, query, positions, k):
+    """实现WKNN方法
+
+    Args:
+        samples (ndarray): 训练集样本
+        query (ndarray): 测试集样本
+        positions (ndarray): 训练集样本的位置
+        k (Number): 最近邻个数
+
+    Returns:
+        prediction (ndarray): 预测位置
+    """
+    samplRows = samples.shape[0]
+    queryRows = query.shape[0]
+    prediction = np.zeros([queryRows, 3])
+
+    if k > samplRows:
+        k = samplRows
+
+    for i in range(queryRows):
+        repQuery = np.tile(query[i, :], (samplRows, 1))
+        sumDist = np.sqrt(np.sum(np.square(samples - repQuery), axis=1))
+
+        idx = np.argsort(sumDist)[0:k] # 前k小值的索引
+        val = sumDist[idx] # 前k小的值
+
+        pos = positions[idx, :]
+        if val[0] == 0: # 若存在某训练集样本与测试集样本的欧氏距离为0，则预测位置为该训练集样本的位置
+            prediction[i, :] = pos[0, :]
+        else:
+            # 计算权重
+            w = 1 / val
+            w = w / np.sum(w)
+
+            prediction[i, :] = np.sum(w * pos.T, axis=1)
+    
+    return prediction
 
 def randomEstimation(samples, query, positions):
     """随机方法

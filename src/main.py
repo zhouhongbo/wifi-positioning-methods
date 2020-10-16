@@ -13,15 +13,16 @@ weekAmount = 3
 
 # 保存75%定位误差的变量
 metricRand = [0] * weekAmount
-metricKnn = [0] * weekAmount
 metricNn = [0] * weekAmount
+metricKnn = [0] * weekAmount
+metricWknn = [0] * weekAmount
 metricStg = [0] * weekAmount
 metricProb = [0] * weekAmount
 metricGk = [0] * weekAmount
 
 week = 1
 while week <= weekAmount:
-    # 加载本周数据
+    # 加载本周数据(这里使用了一半的数据量，即晚上采集的数据)
     dataTrain = loadContentSpecific("db", 1, [2, 4], week)
     dataTest = loadContentSpecific("db", 2, [2, 4, 6, 8], week)
 
@@ -45,6 +46,12 @@ while week <= weekAmount:
     predictionKnn = kNNEstimation(dataTrain.rss, dataTest.rss, dataTrain.coords, knnValue)
     errorKnn = customError(predictionKnn, dataTest.coords)
     metricKnn[week-1] = np.percentile(errorKnn, 75)
+
+    # WKNN方法
+    knnValue = 9
+    predictionWknn = wknnEstimation(dataTrain.rss, dataTest.rss, dataTrain.coords, knnValue)
+    errorWknn = customError(predictionWknn, dataTest.coords)
+    metricWknn[week-1] = np.percentile(errorWknn, 75)
 
     # Stg方法
     stgValue = 3 # 信号最强AP的个数
@@ -74,6 +81,7 @@ x = [i+1 for i in range(weekAmount)]
 plt.plot(x, metricRand, label="Rand")
 plt.plot(x, metricNn, label="NN")
 plt.plot(x, metricKnn, label="KNN")
+plt.plot(x, metricWknn, label="WKNN")
 plt.plot(x, metricStg, label="Stg")
 plt.plot(x, metricProb, label="Prob")
 plt.plot(x, metricGk, label="Gk")
