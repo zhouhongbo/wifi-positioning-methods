@@ -25,6 +25,9 @@ class Data:
         self.coords = coords
         self.time = time
         self.ids = ids
+    
+    def copy(self):
+        return Data(self.rss, self.coords, self.time, self.ids)
 
 def getFileNameDefs():
     """返回与文件名称相关的对象

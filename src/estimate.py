@@ -131,7 +131,8 @@ def stgKNNEstimation(samples, query, positions, stgValue, k):
         for idx in stgIdx:
             allFPIdx.extend(samplesList[idx])
         # 对测试样本应用KNN方法
-        fingerprint = fingerprint.reshape(1, 20)
+        # fingerprint = fingerprint.reshape(1, 20)
+        fingerprint = fingerprint.reshape(1, fingerprint.shape[0])
         kNNPrediction = kNNEstimation(samples[allFPIdx,:], fingerprint, positions[allFPIdx,:], k)
         prediction[i] = kNNPrediction
 
