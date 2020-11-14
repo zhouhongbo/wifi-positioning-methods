@@ -156,3 +156,10 @@ if __name__ == "__main__":
     # findPoint(data.ids, 2)
     # filterSamples(data.ids, 2, 2, 2, 2, 1)
     # findSet(data.ids, 2, 2, 1)
+    
+    # 使用举例：只选择第2个点的数据
+    myFilter =  findPoint(data.ids, 2)
+    data.rss = data.rss[myFilter]
+    data.coords = data.coords[myFilter]
+    data.time = data.time[myFilter]
+    data.ids = data.ids[myFilter]
