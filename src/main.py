@@ -9,7 +9,7 @@ from estimate import *
 from func import *
 
 # 所有定位算法通用的变量
-weekAmount = 3
+weekAmount = 6
 
 # 保存75%定位误差的变量
 metricRand = [0] * weekAmount
